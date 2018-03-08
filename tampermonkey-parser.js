@@ -12,8 +12,6 @@
 (function() {
     'use strict';
 
-var RAL = {}, count = 0;
-
 function rgb2hex(rgb) {
     rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
     function hex(x) {
@@ -22,7 +20,7 @@ function rgb2hex(rgb) {
     return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
 }
 
-function add_row_to_list($elem, i) {
+function getCode($elem, i) {
 
     var code, data = [];
 
@@ -39,6 +37,9 @@ function add_row_to_list($elem, i) {
     if (data[i].length == 0) return;
 
     code = data[i][0].split(' ')[1];
+
+    if(!code)
+        return;
     
     var hex = rgb2hex($($elem[1]).css("backgroundColor"));
     var german_name = data[i][1];
@@ -48,7 +49,7 @@ function add_row_to_list($elem, i) {
     var italian_name = data[i][5];
     var dutch_name = data[i][6];
 
-    RAL[code] = {
+    return {
         'code' : code,
         'hex' : hex,
         'german_name':german_name,
@@ -58,8 +59,6 @@ function add_row_to_list($elem, i) {
         'italian_name':italian_name,
         'dutch_name':dutch_name
     };
-
-    count++;
 }
 
 $(document).ready(function() {
@@ -67,18 +66,27 @@ $(document).ready(function() {
     var row_list = $('div.Section1 table.MsoNormalTable').find('tr').get(),
         i = 0, target_elem;
 
+    var codes = [];
+
     for (i = 10; i < row_list.length - 7; i++) {
 
         target_elem = $(row_list[i]).children('td');
-
+console.log($(target_elem[1]).text())
         if (target_elem.length && target_elem[0].tagName == 'TD') {
             if (target_elem.length > 7 && target_elem.length < 12) {
-                add_row_to_list(target_elem, i);
+
+                var code = getCode(target_elem, i);
+                //console.log(code)
+                if(code)
+                    codes.push(code);
+
             }
         }
     }
-    console.log(count);
-    console.log(RAL);
-    console.log(JSON.stringify(RAL));
+
+    console.log(codes.length);
+    console.log(codes);
+    console.log(JSON.stringify(codes));
+
 });
 })();
